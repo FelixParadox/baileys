@@ -1,7 +1,7 @@
 {
-    "name": "@lynnidoffc/baileys",
-    "version": "3.2.2",
-    "description": "WhatsApp api Lynnidoffc",
+    "name": "@suneo/baileys",
+    "version": "1.0.0",
+    "description": "WhatsApp Bailes",
     "keywords": [
         "whatsapp",
         "baileys",
@@ -11,12 +11,12 @@
         "botwa",
         "lynn.id"
     ],
-    "homepage": "https://github.com/Lynn091202",
+    "homepage": "https://github.com/FelixParadox",
     "profile": {
-        "baseurl": "https://lynnoffc.me"
+        "baseurl": "https://t.me/GlobalBotzXD"
     },
     "license": "MIT",
-    "author": "Lynn.id",
+    "author": "Suneo",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "files": [
