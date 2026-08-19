@@ -78,20 +78,127 @@ pnpm add @suneo/baileys
 Basic Setup
 
 ```javascript
-import makeWASocket from '@suneo/baileys';
-import { useMultiFileAuthState } from '@suneo/baileys';
+const {
+	default: makeWASocket,
+	makeCacheableSignalKeyStore,
+	useMultiFileAuthState,
+	DisconnectReason,
+	fetchLatestBaileysVersion,
+	generateForwardMessageContent,
+	prepareWAMessageMedia,
+	generateWAMessageFromContent,
+	generateMessageID,
+	downloadContentFromMessage,
+	areJidsSameUser,
+	getContentType,
+	jidDecode,
+    MessageRetryMap,
+	proto,
+	delay
+} = require("@whiskeysockets/baileys")
+
+const Pino = require('pino');
+const { Boom } = require('@hapi/boom');
+const fs = require('fs');
+const readline = require("readline")
+const chalk = require("chalk");
+const axios = require("axios");
+const qrcode = require("qrcode-terminal");
+const FileType = require('file-type');
+
+const pairingCode = true
+
+async function InputNumber(promptText) {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+    return new Promise((resolve) => {
+        rl.question(promptText, (answer) => {
+            rl.close();
+            resolve(answer);
+        });
+    });
+}
+
 
 async function startBot() {
-  const { state, saveCreds } = await useMultiFileAuthState('./session');
-  
-  const sock = makeWASocket({
-    auth: state,
-    printQRInTerminal: true,
-    // Custom pairing code
-    pairingCode: '123456'
-  });
+    const { state, saveCreds } = await useMultiFileAuthState('./session');
+    const sock = makeWASocket({
+        version: (await (await fetch('https://raw.githubusercontent.com/WhiskeySockets/Baileys/master/src/Defaults/baileys-version.json')).json()).version,
+        auth: state,
+        browser: ["Ubuntu", "Chrome", "20.0.04"],
+        generateHighQualityLinkPreview: true,
+        printQRInTerminal: !pairingCode,
+        connectTimeoutMs: 20000,
+        keepAliveIntervalMs: 30000,
+        defaultQueryTimeoutMs: 60000,
+        enableAutoSessionRecreation: true,
+        enableRecentMessageCache: true,
+        logger: Pino({ level: "silent" })
+    });
+if (pairingCode && !sock.authState.creds.registered) {
+    let phoneNumber = await InputNumber(chalk.blue.bold('Masukan Nomor WhatsApp :\n'));
+    phoneNumber = phoneNumber
+        .replace(/[^0-9]/g, "")
+          .replace(/\D/g, "")
+            .replace(/^0/, '62')
+              .replace(/^62?0/, '62')
+                .replace(/^\+?62/, '62')
+                  .replace(/^8/, '62');
+        setTimeout(async () => {
+        const code = await sock.requestPairingCode(phoneNumber)
+        await console.log(`${chalk.blue.bold('Kode Pairing')} : ${chalk.white.bold(code)}`)
+        }, 3500)
+    }
 
-  sock.ev.on('creds.update', saveCreds);
+    sock.ev.on('creds.update', saveCreds);
+
+    sock.ev.on("connection.update", async ({ connection, lastDisconnect, qr }) => {
+            if (!connection) return;
+            if (connection === "connecting") {
+            if (qr && !pairingCode) {
+            console.log("Scan QR ini di WhatsApp:");
+            qrcode.generate(qr, { small: true }); 
+            }
+            }
+            if (connection === "close") {
+                const reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
+                console.error(lastDisconnect.error);
+
+                switch (reason) {
+                    case DisconnectReason.badSession:
+                        console.log("Bad Session File, Please Delete Session and Scan Again");
+                        process.exit();
+                    case DisconnectReason.connectionClosed:
+                        console.log("[SYSTEM] Connection closed, reconnecting...");
+                         return startBot();
+                    case DisconnectReason.connectionLost:
+                        console.log("[SYSTEM] Connection lost, trying to reconnect...");
+                         return startBot();
+                    case DisconnectReason.connectionReplaced:
+                        console.log("Connection Replaced, Another New Session Opened. Please Close Current Session First.");
+                        await sock.logout();
+                        break;
+                    case DisconnectReason.restartRequired:
+                        console.log("Restart Required...");
+                        return startBot();
+                    case DisconnectReason.loggedOut:
+                        console.log("Device Logged Out, Please Scan Again And Run.");
+                        await sock.logout();
+                        break;
+                    case DisconnectReason.timedOut:
+                        console.log("Connection TimedOut, Reconnecting...");
+                        return startBot();
+                    default:
+                        if (lastDisconnect.error === "Error: Stream Errored (unknown)") {
+                            process.exit();
+                        }
+                }
+            } else if (connection === "open") {
+                console.log(chalk.blue.bold("Bot Berhasil Tersambung √"))                
+            }
+        });
 
   sock.ev.on('messages.upsert', async (m) => {
     const msg = m.messages[0];
