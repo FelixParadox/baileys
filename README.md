@@ -1,4 +1,4 @@
-🚀 @suneo/baileys
+🚀 @felixneo/baileys
 
 WhatsApp Baileys - Library WhatsApp Automation dengan Pairing Stabil & Fitur Lengkap
 
@@ -7,8 +7,8 @@ WhatsApp Baileys - Library WhatsApp Automation dengan Pairing Stabil & Fitur Len
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@suneo/baileys">
-    <img src="https://img.shields.io/npm/v/@suneo/baileys.svg?style=for-the-badge&color=25D366" alt="npm version" />
+  <a href="https://www.npmjs.com/package/@felixneo/baileys">
+    <img src="https://img.shields.io/npm/v/@felixneo/baileys.svg?style=for-the-badge&color=25D366" alt="npm version" />
   </a>
   <a href="https://nodejs.org">
     <img src="https://img.shields.io/badge/Node.js-20%2B-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" />
@@ -25,7 +25,7 @@ WhatsApp Baileys - Library WhatsApp Automation dengan Pairing Stabil & Fitur Len
 
 📖 Tentang Baileys
 
-@suneo/baileys adalah library open-source untuk membangun solusi otomatisasi dan integrasi dengan WhatsApp secara efisien dan langsung. Menggunakan teknologi WebSocket tanpa memerlukan browser, library ini mendukung berbagai fitur seperti:
+@felixneo/baileys adalah library open-source untuk membangun solusi otomatisasi dan integrasi dengan WhatsApp secara efisien dan langsung. Menggunakan teknologi WebSocket tanpa memerlukan browser, library ini mendukung berbagai fitur seperti:
 
 · Manajemen pesan
 · Penanganan chat
@@ -56,19 +56,19 @@ Fitur Deskripsi
 NPM
 
 ```bash
-npm install @suneo/baileys
+npm install @felixneo/baileys
 ```
 
 Yarn
 
 ```bash
-yarn add @suneo/baileys
+yarn add @felixneo/baileys
 ```
 
 PNPM
 
 ```bash
-pnpm add @suneo/baileys
+pnpm add @felixneo/baileys
 ```
 
 ---
@@ -473,7 +473,7 @@ await sock.sendMessage(jid, {
 
 ---
 
-🤝 Mengapa Memilih @suneo/baileys?
+🤝 Mengapa Memilih @felixneo/baileys?
 
 Keunggulan Deskripsi
 🔐 Pairing Stabil Proses pairing yang handal & anti-gagal
